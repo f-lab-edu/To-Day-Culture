@@ -52,6 +52,7 @@ To-day-Art/
 ├── docker-compose.yml              # 전체 프로젝트 Docker 설정
 ├── .env                            # 공통 환경 변수 파일
 └── README.md                       # 프로젝트 개요 및 설명
+```
 
 
 ## 📚 유즈케이스
