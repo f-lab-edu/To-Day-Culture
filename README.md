@@ -17,6 +17,43 @@ To-day Culture는 현대인의 문화생활을 더 쉽고 즐겁게 만들어주
 - **CI/CD**: GitHub Actions
 - **기타 도구**: Docker, Alembic (DB 마이그레이션), Pytest (테스트)
 
+# To-day-Art Project Structure
+
+```bash
+To-day-Art/
+├── api-gateway/                    # NGINX 또는 API Gateway 설정을 위한 디렉토리
+│   └── nginx.conf                  # NGINX API Gateway 설정 파일
+├── services/
+│   ├── user-service/               # 사용자 관련 기능을 담당하는 서비스
+│   │   ├── app/                    # FastAPI 애플리케이션 디렉토리
+│   │   │   ├── main.py             # FastAPI 진입점, 라우터 등록 및 서버 실행
+│   │   │   ├── auth.py             # 인증/회원가입/로그인 관련 로직
+│   │   │   ├── models.py           # 데이터베이스 모델 및 Pydantic 스키마 정의
+│   │   │   ├── routers/            # 다양한 라우터가 들어가는 디렉토리
+│   │   │   └── services/           # 비즈니스 로직 및 서비스 기능 정의
+│   │   ├── tests/                  # 단위 테스트 및 통합 테스트 디렉토리
+│   │   │   ├── test_auth.py        # 인증 관련 테스트 파일
+│   │   ├── requirements.txt        # 필요한 패키지 목록
+│   │   ├── Dockerfile              # Docker 이미지 생성을 위한 파일
+│   │   └── .env                    # 환경 변수 파일 (DB 정보 및 SECRET_KEY)
+│   ├── content-service/            # 문화 콘텐츠 관련 정보를 제공하는 서비스
+│   │   ├── app/
+│   │   │   ├── main.py
+│   │   │   ├── routers/            # 영화, 공연, 뮤지컬 등 콘텐츠 라우터
+│   │   └── requirements.txt        # 필요한 패키지 목록
+│   ├── review-service/             # 리뷰 작성 및 관리 서비스
+│   │   ├── app/
+│   │   │   ├── main.py
+│   │   │   ├── routers/            # 리뷰 관련 라우터
+│   │   └── requirements.txt        # 필요한 패키지 목록
+├── shared/                         # 여러 서비스에서 공통으로 사용하는 유틸리티
+│   ├── db.py                       # 데이터베이스 연결 및 세션 관리 코드
+│   ├── utils.py                    # 공통 유틸리티 함수들
+├── docker-compose.yml              # 전체 프로젝트 Docker 설정
+├── .env                            # 공통 환경 변수 파일
+└── README.md                       # 프로젝트 개요 및 설명
+
+
 ## 📚 유즈케이스
 
 ### 1. 사용자 인증 및 관리
