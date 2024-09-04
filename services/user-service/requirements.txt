@@ -5,6 +5,8 @@ asyncpg==0.29.0
 bcrypt==4.2.0
 click==8.1.7
 colorama==0.4.6
+dnspython==2.6.1
+email_validator==2.2.0
 exceptiongroup==1.2.2
 fastapi==0.112.2
 greenlet==3.0.3
