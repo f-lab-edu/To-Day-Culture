@@ -17,6 +17,9 @@ To-day Culture는 현대인의 문화생활을 더 쉽고 즐겁게 만들어주
 - **CI/CD**: GitHub Actions
 - **기타 도구**: Docker, Alembic (DB 마이그레이션), Pytest (테스트)
 
+## ERD
+![Untitled (3)](https://github.com/user-attachments/assets/d03feea0-2087-4cdc-9d7f-886405081344)
+
 # To-day-Art Project Structure
 
 ```bash
