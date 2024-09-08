@@ -20,6 +20,10 @@ To-day Culture는 현대인의 문화생활을 더 쉽고 즐겁게 만들어주
 ## ERD
 ![Untitled (3)](https://github.com/user-attachments/assets/d03feea0-2087-4cdc-9d7f-886405081344)
 
+## 🔖 Infra structure
+![cloud ar drawio](https://github.com/user-attachments/assets/e620a26c-0996-43ec-948f-49603fe90c24)
+
+
 # To-day-Art Project Structure
 
 ```bash
