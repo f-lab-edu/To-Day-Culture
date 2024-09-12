@@ -1,0 +1,21 @@
+# 가상환경
+venv/
+
+# Python bytecode
+pycache/
+*.pyc
+
+# 환경 파일
+.env
+
+# Docker 관련
+*.log
+*.pid
+*.bak
+*.swp
+.dockerignore
+
+# 기타
+.idea/
+.vscode/
+*.sqlite3
