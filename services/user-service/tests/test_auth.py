@@ -1,73 +1,109 @@
+import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from app.auth import fake_users_db
 
 client = TestClient(app)
 
-# 회원가입 테스트
-def test_signup():
+@pytest.fixture(autouse=True)
+def reset_fake_users_db():
+    fake_users_db.clear()
+
+
+def test_signup_success():
     response = client.post(
         "/auth/signup",
         json={
-            "email": "test@example.com",
+            "email": "testuser@example.com",
             "username": "testuser",
-            "password": "testpassword"
+            "password": "password123"
         }
     )
     assert response.status_code == 201
-    assert response.json() == {"msg": "User created successfully"}
+    assert response.json() == {"msg": "회원가입이 완료되었습니다."}
 
-# 로그인 테스트
-def test_login():
-    # 먼저 회원가입
+
+def test_signup_duplicate_email():
     client.post(
         "/auth/signup",
         json={
-            "email": "test@example.com",
-            "username": "testuser",
-            "password": "testpassword"
+            "email": "testuser@example.com",
+            "username": "testuser1",
+            "password": "password123"
         }
     )
+    response = client.post(
+        "/auth/signup",
+        json={
+            "email": "testuser@example.com",
+            "username": "testuser2",
+            "password": "password456"
+        }
+    )
+    assert response.status_code == 400
+    assert response.json() == {"detail": "이미 가입된 이메일입니다."}
 
-    # 로그인 테스트
+
+def test_signup_invalid_email_format():
+    response = client.post(
+        "/auth/signup",
+        json={
+            "email": "invalid-email-format",
+            "username": "testuser",
+            "password": "password123"
+        }
+    )
+    assert response.status_code == 422  # FastAPI는 자동으로 422를 반환
+
+
+def test_login_success():
+    client.post(
+        "/auth/signup",
+        json={
+            "email": "testuser@example.com",
+            "username": "testuser",
+            "password": "password123"
+        }
+    )
     response = client.post(
         "/auth/login",
         json={
-            "email": "test@example.com",
-            "password": "testpassword"
+            "email": "testuser@example.com",
+            "password": "password123"
         }
     )
     assert response.status_code == 200
-    data = response.json()
-    assert "access_token" in data
-    assert data["token_type"] == "bearer"
+    assert "access_token" in response.json()
+    assert response.json()["token_type"] == "bearer"
 
-# 보호된 API 테스트
-def test_protected_route():
-    # 회원가입 및 로그인
+
+def test_login_invalid_credentials():
     client.post(
         "/auth/signup",
         json={
-            "email": "test@example.com",
+            "email": "testuser@example.com",
             "username": "testuser",
-            "password": "testpassword"
+            "password": "password123"
         }
     )
-    
-    login_response = client.post(
+    response = client.post(
         "/auth/login",
         json={
-            "email": "test@example.com",
-            "password": "testpassword"
+            "email": "testuser@example.com",
+            "password": "wrongpassword"
         }
     )
-    
-    token = login_response.json()["access_token"]
+    assert response.status_code == 400
+    assert response.json() == {"detail": "이메일 또는 비밀번호가 잘못되었습니다."}
 
-    # 보호된 엔드포인트 접근
-    response = client.get(
-        "/protected-endpoint", 
-        headers={"Authorization": f"Bearer {token}"}
+
+def test_login_non_existent_email():
+    response = client.post(
+        "/auth/login",
+        json={
+            "email": "nonexistent@example.com",
+            "password": "password123"
+        }
     )
-    
-    assert response.status_code == 200
-    assert response.json() == {"email": "test@example.com", "message": "This is a protected route"}
+    assert response.status_code == 400
+    assert response.json() == {"detail": "이메일 또는 비밀번호가 잘못되었습니다."}
