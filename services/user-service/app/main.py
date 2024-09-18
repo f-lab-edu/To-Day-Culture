@@ -1,19 +1,16 @@
-from fastapi import FastAPI, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import FastAPI
 from app.auth import router as auth_router
-from starlette.responses import JSONResponse
+from app.db import Base, engine
 
-# FastAPI 애플리케이션 생성
 app = FastAPI()
 
-# OAuth2PasswordBearer 설정 (JWT 토큰을 사용해 보호된 엔드포인트 인증)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+# 데이터베이스 테이블 생성
+Base.metadata.create_all(bind=engine)
 
 # 회원가입 및 로그인 라우터 등록
 app.include_router(auth_router, prefix="/auth")
 
-# 보호된 엔드포인트 추가
-@app.get("/protected-endpoint")
-async def protected_route(token: str = Depends(oauth2_scheme)):
-    # JWT 토큰을 검증한 후 필요한 작업을 수행
-    return JSONResponse({"message": "This is a protected route"})
+# 건강 체크 엔드포인트
+@app.get("/")
+def read_root():
+    return {"message": "To-Day Culture API is running"}
