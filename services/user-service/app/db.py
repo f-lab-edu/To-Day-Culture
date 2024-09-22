@@ -1,7 +1,13 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
 
-DATABASE_URL = "postgresql://admin:1234@localhost:5432/to_day_culture_db"
+# .env 파일 로드
+load_dotenv()
+
+# .env에서 DATABASE_URL 불러오기
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

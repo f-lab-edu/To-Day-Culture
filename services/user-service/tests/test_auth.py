@@ -8,7 +8,7 @@ def test_signup():
     response = client.post(
         "/auth/signup",
         json={
-            "email": "newtestuser@example.com",
+            "email": "newtestuser1@example.com",
             "username": "testuser",
             "password": "testpassword"
         }
