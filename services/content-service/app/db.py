@@ -3,12 +3,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
-# .env 파일 로드
+# .env 파일에서 환경 변수 불러오기
 load_dotenv()
 
-# .env 파일에서 DATABASE_URL 가져오기
+# DATABASE_URL 환경 변수를 가져옴
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+# 데이터베이스 엔진 및 세션 구성
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
