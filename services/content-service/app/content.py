@@ -1,5 +1,4 @@
 # content.py
-
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.schemas import ContentCreate, Content as ContentSchema
@@ -22,10 +21,17 @@ def create_content(content: ContentCreate, db: Session = Depends(get_db)):
     db.refresh(new_content)
     return new_content
 
-# 콘텐츠 목록 조회 엔드포인트
+# 콘텐츠 목록 조회 엔드포인트 (필터링 기능 추가)
 @router.get("/", response_model=list[ContentSchema])
-def get_contents(db: Session = Depends(get_db)):
-    contents = db.query(Content).all()
+def get_contents(title: str = None, category: str = None, db: Session = Depends(get_db)):
+    query = db.query(Content)
+
+    if title:
+        query = query.filter(Content.title.ilike(f"%{title}%"))
+    if category:
+        query = query.filter(Content.category == category)
+    
+    contents = query.all()
     return contents
 
 # 콘텐츠 삭제 엔드포인트
@@ -36,3 +42,4 @@ def delete_content(content_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Content not found")
     db.delete(content)
     db.commit()
+

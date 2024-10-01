@@ -1,3 +1,4 @@
+# test_content.py
 from fastapi.testclient import TestClient
 from app.main import app  # FastAPI 앱을 임포트
 
@@ -10,8 +11,8 @@ def test_create_content():
         json={
             "title": "Test Movie",
             "description": "A great movie",
-            "category": "Movie",  # 필수 필드 추가
-            "creator": "John Doe"  # 필수 필드 추가
+            "category": "Movie",
+            "creator": "John Doe"
         }
     )
     assert response.status_code == 201
@@ -20,23 +21,28 @@ def test_create_content():
 
 def test_get_content():
     # 콘텐츠 생성 후 상태 확인
-    response = client.post(
+    client.post(
         "/contents/",
         json={
             "title": "Test Performance",
             "description": "A live performance",
-            "category": "Performance",  # 필수 필드 추가
-            "creator": "Jane Smith"  # 필수 필드 추가
+            "category": "Performance",
+            "creator": "Jane Smith"
         }
     )
-    assert response.status_code == 201  # 상태 코드 확인
     
-    # 콘텐츠 목록 조회
-    response = client.get("/contents/")
+    # 제목 필터링 테스트
+    response = client.get("/contents/?title=Test")
     assert response.status_code == 200
     contents = response.json()
     assert len(contents) > 0
     assert any(content["title"] == "Test Performance" for content in contents)
+
+    # 카테고리 필터링 테스트
+    response = client.get("/contents/?category=Performance")
+    assert response.status_code == 200
+    contents = response.json()
+    assert any(content["category"] == "Performance" for content in contents)
 
 
 def test_delete_content():
@@ -46,8 +52,8 @@ def test_delete_content():
         json={
             "title": "Test Art",
             "description": "An amazing art",
-            "category": "Art",  # 필수 필드 추가
-            "creator": "John Artist"  # 필수 필드 추가
+            "category": "Art",
+            "creator": "John Artist"
         }
     )
     content_id = response.json()["id"]
