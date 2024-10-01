@@ -1,5 +1,3 @@
-# tests/test_content.py
-
 from fastapi.testclient import TestClient
 from app.main import app  # FastAPI 앱을 임포트
 
@@ -21,7 +19,7 @@ def test_create_content():
 
 
 def test_get_content():
-    # 콘텐츠 생성
+    # 콘텐츠 생성 후 상태 확인
     response = client.post(
         "/contents/",
         json={
@@ -31,6 +29,7 @@ def test_get_content():
             "creator": "Jane Smith"  # 필수 필드 추가
         }
     )
+    assert response.status_code == 201  # 상태 코드 확인
     
     # 콘텐츠 목록 조회
     response = client.get("/contents/")
