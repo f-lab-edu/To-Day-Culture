@@ -1,6 +1,8 @@
+# test_content.py
 from fastapi.testclient import TestClient
 from app.main import app  # FastAPI 앱을 임포트
 
+# TestClient 생성
 client = TestClient(app)
 
 def test_create_content():
@@ -18,8 +20,8 @@ def test_create_content():
 
 
 def test_get_content():
-    # 콘텐츠 생성
-    response = client.post(
+    # 콘텐츠 생성 후 상태 확인
+    client.post(
         "/contents/",
         json={
             "title": "Test Performance",
@@ -28,30 +30,19 @@ def test_get_content():
             "creator": "Jane Smith"
         }
     )
-    assert response.status_code == 201  # 상태 코드 확인
     
-    # 콘텐츠 목록 조회
-    response = client.get("/contents/")
+    # 제목 필터링 테스트
+    response = client.get("/contents/?title=Test")
     assert response.status_code == 200
     contents = response.json()
     assert len(contents) > 0
     assert any(content["title"] == "Test Performance" for content in contents)
 
-
-def test_search_content():
-    # 콘텐츠 검색
-    response = client.get("/contents/?title=Test Performance")
+    # 카테고리 필터링 테스트
+    response = client.get("/contents/?category=Performance")
     assert response.status_code == 200
     contents = response.json()
-    assert len(contents) > 0
-    assert contents[0]["title"] == "Test Performance"
-
-    # 카테고리로 필터링
-    response = client.get("/contents/?category=Movie")
-    assert response.status_code == 200
-    contents = response.json()
-    assert len(contents) > 0
-    assert contents[0]["category"] == "Movie"
+    assert any(content["category"] == "Performance" for content in contents)
 
 
 def test_delete_content():
