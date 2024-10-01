@@ -31,7 +31,6 @@ def test_get_content():
             "creator": "Jane Smith"  # 필수 필드 추가
         }
     )
-    content_id = response.json()["id"]
     
     # 콘텐츠 목록 조회
     response = client.get("/contents/")
