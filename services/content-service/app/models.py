@@ -8,5 +8,5 @@ class Content(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)  # 콘텐츠 제목
     description = Column(Text, nullable=True)    # 콘텐츠 설명
-    category = Column(String(50), nullable=False)  # 콘텐츠 카테고리 (예: 영화, 공연, 뮤지컬 등)
-    creator = Column(String(100), nullable=False)  # 제작자 정보
+    category = Column(String, nullable=True)  # 선택적 필드로 변경
+    creator = Column(String, nullable=True)   # 선택적 필드로 변경
