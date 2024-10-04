@@ -1,8 +1,8 @@
-"""Add Post and Comment tables
+"""Add cascade delete on comments
 
-Revision ID: 357919459776
-Revises: 9ff9083093e0
-Create Date: 2024-10-03 12:58:28.014097
+Revision ID: 69c3f0af93cf
+Revises: 494cbc583db6
+Create Date: 2024-10-04 21:02:08.417458
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '357919459776'
-down_revision: Union[str, None] = '9ff9083093e0'
+revision: str = '69c3f0af93cf'
+down_revision: Union[str, None] = '494cbc583db6'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
