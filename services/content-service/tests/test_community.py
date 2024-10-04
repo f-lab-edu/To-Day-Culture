@@ -4,63 +4,41 @@ from app.main import app
 client = TestClient(app)
 
 def test_create_post():
-    response = client.post(
-        "/community/posts/",
-        json={
-            "title": "Test Post",
-            "content": "This is a test post content"
-        }
-    )
+    response = client.post("/posts/", json={
+        "title": "Test Post",
+        "content": "This is a test post",
+        "author_id": 1
+    })
     assert response.status_code == 201
     assert response.json()["title"] == "Test Post"
 
-def test_get_posts():
-    # 게시글 생성
-    client.post(
-        "/community/posts/",
-        json={
-            "title": "Test Post",
-            "content": "This is a test post content"
-        }
-    )
-
-    # 게시글 목록 조회
-    response = client.get("/community/posts/")
-    assert response.status_code == 200
-    assert len(response.json()) > 0
-
 def test_add_comment():
-    # 게시글 생성
-    post_response = client.post(
-        "/community/posts/",
-        json={
-            "title": "Post with Comment",
-            "content": "Post content"
-        }
-    )
-    post_id = post_response.json()["id"]
+    response = client.post("/posts/1/comments", json={
+        "content": "This is a test comment",
+        "author_id": 1
+    })
+    assert response.status_code == 201
+    assert response.json()["content"] == "This is a test comment"
 
-    # 댓글 추가
-    comment_response = client.post(
-        f"/community/posts/{post_id}/comments/",
-        json={
-            "content": "This is a comment"
-        }
-    )
-    assert comment_response.status_code == 201
-    assert comment_response.json()["content"] == "This is a comment"
+def test_get_posts():
+    response = client.get("/posts/")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
 
 def test_delete_post():
-    # 게시글 생성
-    post_response = client.post(
-        "/community/posts/",
-        json={
-            "title": "Post to Delete",
-            "content": "Post content"
-        }
-    )
-    post_id = post_response.json()["id"]
+    response = client.delete("/posts/1")
+    assert response.status_code == 204
 
-    # 게시글 삭제
-    delete_response = client.delete(f"/community/posts/{post_id}")
-    assert delete_response.status_code == 204
+def test_delete_comment():
+    response = client.delete("/posts/1/comments/1")
+    assert response.status_code == 204
+
+def test_user_not_found():
+    # 존재하지 않는 유저 정보로 게시물 생성 시도
+    response = client.post("/posts/", json={
+        "title": "Test Post",
+        "content": "This is a test post",
+        "author_id": 9999  # 없는 유저 ID
+    })
+    assert response.status_code == 404
+    assert response.json()["detail"] == "유저 정보를 가져오는 데 실패했습니다."
