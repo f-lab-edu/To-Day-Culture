@@ -8,7 +8,7 @@ client = TestClient(app)
 # 유저 서비스 호출 함수
 def get_user_info(author_id: int):
     try:
-        response = requests.get(f"http://user-service:8001/api/users/{author_id}")
+        response = requests.get(f"https://user-service:8001/api/users/{author_id}")
         if response.status_code == 200:
             return response.json()
         else:
