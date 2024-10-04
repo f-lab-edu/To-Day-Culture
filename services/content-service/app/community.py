@@ -11,54 +11,26 @@ router = APIRouter()
 POST_NOT_FOUND = "Post not found"
 COMMENT_NOT_FOUND = "Comment not found"
 USER_SERVICE_ERROR = "유저 정보를 가져오는 데 실패했습니다."
-USER_SERVICE_CONNECTION_FAILED = "유저 서비스와의 연결에 실패했습니다."
-USER_SERVICE_TIMEOUT = "유저 서비스 타임아웃"
-USER_SERVICE_COMMUNICATION_ERROR = "유저 서비스와의 통신 오류"
-POST_DELETED_SUCCESS = "Post deleted successfully"
-
-# 공통 예외 처리 클래스 정의
-class ServiceException(Exception):
-    def __init__(self, status_code: int, detail: str):
-        self.status_code = status_code
-        self.detail = detail
-        super().__init__(self.detail)
 
 # 사용자 정보 가져오기 함수
 def get_user_info(author_id: int):
     try:
+        # HTTP -> HTTPS로 변경하여 보안 강화
         response = requests.get(f"https://user-service:8001/api/users/{author_id}")
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.HTTPError as http_err:
-        raise ServiceException(status_code=response.status_code, detail=USER_SERVICE_ERROR) from http_err
-    except requests.exceptions.ConnectionError as conn_err:
-        raise ServiceException(status_code=500, detail=USER_SERVICE_CONNECTION_FAILED) from conn_err
-    except requests.exceptions.Timeout as timeout_err:
-        raise ServiceException(status_code=504, detail=USER_SERVICE_TIMEOUT) from timeout_err
-    except requests.exceptions.RequestException as req_err:
-        raise ServiceException(status_code=500, detail=USER_SERVICE_COMMUNICATION_ERROR) from req_err
-
-# 예외 처리용 데코레이터
-def handle_service_exceptions(func):
-    async def wrapper(*args, **kwargs):
-        try:
-            return await func(*args, **kwargs)
-        except ServiceException as e:
-            raise HTTPException(status_code=e.status_code, detail=e.detail)
-    return wrapper
-
-# 게시물 존재 여부 확인 함수
-def get_post_or_404(post_id: int, db: Session):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        raise HTTPException(status_code=404, detail=POST_NOT_FOUND)
-    return post
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(status_code=response.status_code, detail=USER_SERVICE_ERROR)
+    except requests.exceptions.RequestException as e:
+        print(f"유저 서비스와의 통신 오류: {e}")
+        raise HTTPException(status_code=500, detail="유저 서비스와의 연결에 실패했습니다.")
 
 # 게시물 생성 엔드포인트
 @router.post("/", response_model=PostResponse, status_code=201)
-@handle_service_exceptions
-async def create_post(post: PostCreate, db: Session = Depends(get_db)):
+def create_post(post: PostCreate, db: Session = Depends(get_db)):
+    # 유저 정보 가져오기, 실제로 사용할 경우에만 가져옴
     get_user_info(post.author_id)
+    
     new_post = Post(
         title=post.title,
         content=post.content,
@@ -71,16 +43,21 @@ async def create_post(post: PostCreate, db: Session = Depends(get_db)):
 
 # 댓글 추가 엔드포인트
 @router.post("/{post_id}/comments", response_model=CommentResponse, status_code=201)
-@handle_service_exceptions
-async def add_comment(post_id: int, comment: CommentCreate, db: Session = Depends(get_db)):
+def add_comment(post_id: int, comment: CommentCreate, db: Session = Depends(get_db)):
+    # 유저 정보 가져오기
     get_user_info(comment.author_id)
-    get_post_or_404(post_id, db)
     
+    # 게시물 존재 여부 확인
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail=POST_NOT_FOUND)
+    
+    # 댓글 생성
     new_comment = Comment(
         content=comment.content,
         author_id=comment.author_id,
         post_id=post_id
-    )
+    )   
     db.add(new_comment)
     db.commit()
     db.refresh(new_comment)
@@ -88,25 +65,33 @@ async def add_comment(post_id: int, comment: CommentCreate, db: Session = Depend
 
 # 게시물 조회 엔드포인트
 @router.get("/posts/{post_id}", response_model=PostResponse)
-async def get_post(post_id: int, db: Session = Depends(get_db)):
-    return get_post_or_404(post_id, db)
+def get_post(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail=POST_NOT_FOUND)
+    return post
 
 # 게시물 삭제 엔드포인트
 @router.delete("/posts/{post_id}", status_code=204)
-async def delete_post(post_id: int, db: Session = Depends(get_db)):
-    post = get_post_or_404(post_id, db)
+def delete_post(post_id: int, db: Session = Depends(get_db)):
+    # 게시물 존재 여부 확인
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail=POST_NOT_FOUND)
+    
+    # 게시물 삭제 (관련된 댓글도 함께 삭제됨)
     db.delete(post)
     db.commit()
-    return {"msg": POST_DELETED_SUCCESS}
+    return {"msg": "Post deleted successfully"}
 
 # 댓글 삭제 엔드포인트
 @router.delete("/{post_id}/comments/{comment_id}", status_code=204)
-async def delete_comment(post_id: int, comment_id: int, db: Session = Depends(get_db)):
-    get_post_or_404(post_id, db)
-    
+def delete_comment(post_id: int, comment_id: int, db: Session = Depends(get_db)):
+    # 댓글 존재 여부 확인
     comment = db.query(Comment).filter(Comment.id == comment_id, Comment.post_id == post_id).first()
     if not comment:
         raise HTTPException(status_code=404, detail=COMMENT_NOT_FOUND)
     
+    # 댓글 삭제
     db.delete(comment)
     db.commit()
