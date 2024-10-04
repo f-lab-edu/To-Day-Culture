@@ -1,4 +1,23 @@
+# Ignore environment and sensitive files
 .env
-*.pyc
+*.env
+
+# Ignore Python virtual environments
+venv/
 __pycache__/
+*.pyc
+
+# Ignore git and other VCS directories
 .git/
+.gitignore
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+
+# Ignore IDE files
+*.idea/
+*.vscode/
+
+# Ignore node modules
+node_modules/
