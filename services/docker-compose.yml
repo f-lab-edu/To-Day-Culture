@@ -11,10 +11,11 @@ services:
       - content-db
     environment:
       - DATABASE_URL=postgresql://admin:1234@content-db:5432/content_db
+      - TEST_DATABASE_URL=postgresql://admin:1234@content-test-db:5432/test_content_db
+      - ENV=production  # 이 값을 'test'로 변경하여 테스트 환경 설정 가능
     networks:
       - app-network
-    command: alembic upgrade head && pytest
-    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload  # 앱 실행 (필요 시 수동 실행)
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   user-service:
     build:
@@ -26,10 +27,11 @@ services:
       - user-db
     environment:
       - DATABASE_URL=postgresql://admin:1234@user-db:5432/to_day_culture_db
+      - TEST_DATABASE_URL=postgresql://admin:1234@user-test-db:5432/test_user_db
+      - ENV=production
     networks:
       - app-network
-    command: pytest
-    # command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload  # 앱 실행 (필요 시 수동 실행)
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001
 
   content-db:
     image: postgres:13
@@ -43,6 +45,18 @@ services:
     networks:
       - app-network
 
+  content-test-db:
+    image: postgres:13
+    container_name: content-test-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: test_content_db
+    ports:
+      - "5435:5432"
+    networks:
+      - app-network
+
   user-db:
     image: postgres:13
     container_name: user-db
@@ -52,6 +66,18 @@ services:
       POSTGRES_DB: to_day_culture_db
     ports:
       - "5434:5432"
+    networks:
+      - app-network
+
+  user-test-db:
+    image: postgres:13
+    container_name: user-test-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: test_user_db
+    ports:
+      - "5436:5432"
     networks:
       - app-network
 
