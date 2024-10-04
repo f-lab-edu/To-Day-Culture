@@ -11,5 +11,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 소스 코드 복사
 COPY . .
 
-# 서비스 실행 명령어 (FastAPI)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+# Pytest만 실행, 앱 실행은 주석 처리
+CMD pytest
+# CMD uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload  # 앱 실행 (필요 시 수동 실행)

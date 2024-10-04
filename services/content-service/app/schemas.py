@@ -23,31 +23,26 @@ class ContentFilter(BaseModel):
     category: Optional[str] = None
     creator: Optional[str] = None
 
-# 커뮤니티 스키마
-class CommentCreate(BaseModel):
+# Post 관련 스키마
+class PostCreate(BaseModel):
+    title: str
     content: str
-
-class Comment(BaseModel):
-    id: int
-    content: str
-    post_id: int
     author_id: int
-    created_at: datetime
+
+class PostResponse(PostCreate):
+    id: int
 
     class Config:
         orm_mode = True
 
-class PostCreate(BaseModel):
-    title: str
-    content: str
-
-class Post(BaseModel):
-    id: int
-    title: str
+# Comment 관련 스키마
+class CommentCreate(BaseModel):
     content: str
     author_id: int
-    created_at: datetime
-    comments: List[Comment] = []
+
+class CommentResponse(CommentCreate):
+    id: int
+    post_id: int
 
     class Config:
         orm_mode = True

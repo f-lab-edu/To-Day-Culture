@@ -1,4 +1,3 @@
- 
 version: '3.8'
 
 services:
@@ -7,26 +6,30 @@ services:
       context: ./content-service
     container_name: content-service
     ports:
-      - "8000:8000"  # content-service가 로컬에서 8000 포트로 실행됨
+      - "8000:8000"
     depends_on:
       - content-db
     environment:
-      - DATABASE_URL=postgresql://admin:1234@localhost:5432/content_db
+      - DATABASE_URL=postgresql://admin:1234@content-db:5432/content_db
     networks:
       - app-network
+    command: alembic upgrade head && pytest
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload  # 앱 실행 (필요 시 수동 실행)
 
   user-service:
     build:
       context: ./user-service
     container_name: user-service
     ports:
-      - "8001:8001"  # user-service가 로컬에서 8001 포트로 실행됨
+      - "8001:8001"
     depends_on:
       - user-db
     environment:
-      - DATABASE_URL=postgresql://admin:1234@localhost:5432/to_day_culture_db
+      - DATABASE_URL=postgresql://admin:1234@user-db:5432/to_day_culture_db
     networks:
       - app-network
+    command: pytest
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload  # 앱 실행 (필요 시 수동 실행)
 
   content-db:
     image: postgres:13
