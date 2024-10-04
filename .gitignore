@@ -13,7 +13,6 @@ pycache/
 *.pid
 *.bak
 *.swp
-.dockerignore
 
 # 기타
 .idea/
