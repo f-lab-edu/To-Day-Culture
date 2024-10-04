@@ -7,6 +7,9 @@ RUN useradd -m appuser
 # Set the working directory
 WORKDIR /app
 
+# Change ownership of the working directory to the non-root user
+RUN chown -R appuser /app
+
 # Copy only requirements.txt and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
