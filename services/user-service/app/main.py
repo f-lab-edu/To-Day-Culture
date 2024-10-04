@@ -14,3 +14,6 @@ app.include_router(auth_router, prefix="/auth")
 @app.get("/")
 def read_root():
     return {"message": "To-Day Culture API is running"}
+
+# 유저 서비스 라우터 추가
+app.include_router(auth_router, prefix="/api", tags=["auth"])

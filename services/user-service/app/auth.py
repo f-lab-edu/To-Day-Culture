@@ -6,6 +6,7 @@ from app.db import get_db
 from app.schemas import UserCreate, UserLogin
 from app.utils import hash_password, verify_password, create_access_token, verify_access_token
 from datetime import timedelta
+from jose import JWTError
 
 router = APIRouter()
 
@@ -27,7 +28,12 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
 
-    return {"msg": "회원가입이 완료되었습니다."}
+    # 유저 정보 반환 (id, email, username)
+    return {
+        "id": new_user.id,
+        "email": new_user.email,
+        "username": new_user.username
+    }
 
 # 로그인
 @router.post("/login")
@@ -50,3 +56,11 @@ def protected_route(token: str = Depends(oauth2_scheme)):
         return {"msg": f"안녕하세요, {email}님! 이곳은 보호된 엔드포인트입니다."}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 인증 자격 증명입니다.")
+
+# 유저 조회 엔드포인트
+@router.get("/users/{user_id}")
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="유저를 찾을 수 없습니다.")
+    return {"id": user.id, "email": user.email, "username": user.username}
