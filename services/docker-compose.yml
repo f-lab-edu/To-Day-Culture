@@ -1,0 +1,57 @@
+ 
+version: '3.8'
+
+services:
+  content-service:
+    build:
+      context: ./content-service
+    container_name: content-service
+    ports:
+      - "8000:8000"  # content-service가 로컬에서 8000 포트로 실행됨
+    depends_on:
+      - content-db
+    environment:
+      - DATABASE_URL=postgresql://admin:1234@localhost:5432/content_db
+    networks:
+      - app-network
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    ports:
+      - "8001:8001"  # user-service가 로컬에서 8001 포트로 실행됨
+    depends_on:
+      - user-db
+    environment:
+      - DATABASE_URL=postgresql://admin:1234@localhost:5432/to_day_culture_db
+    networks:
+      - app-network
+
+  content-db:
+    image: postgres:13
+    container_name: content-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: contentdb
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+
+  user-db:
+    image: postgres:13
+    container_name: user-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: userdb
+    ports:
+      - "5434:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
