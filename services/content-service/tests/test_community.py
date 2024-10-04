@@ -12,19 +12,19 @@ def get_user_info(author_id: int):
         response.raise_for_status()  # 상태 코드가 200이 아닐 경우 HTTPError 발생
         return response.json()
     except requests.exceptions.HTTPError as http_err:
-        raise Exception(f"HTTP error occurred while fetching user info: {http_err}") from http_err
+        raise requests.exceptions.HTTPError(f"HTTP error occurred while fetching user info: {http_err}")
     except requests.exceptions.ConnectionError as conn_err:
-        raise Exception(f"Connection error occurred while communicating with user service: {conn_err}") from conn_err
+        raise requests.exceptions.ConnectionError(f"Connection error occurred: {conn_err}")
     except requests.exceptions.Timeout as timeout_err:
-        raise Exception(f"Timeout occurred while communicating with user service: {timeout_err}") from timeout_err
+        raise requests.exceptions.Timeout(f"Timeout occurred: {timeout_err}")
     except requests.exceptions.RequestException as req_err:
-        raise Exception(f"Unexpected error occurred while communicating with user service: {req_err}") from req_err
+        raise requests.exceptions.RequestException(f"Unexpected error occurred: {req_err}")
 
 # 게시물 생성 테스트
 def test_create_post():
     try:
         user_info = get_user_info(1)  # 유저 서비스에서 유저 정보 조회
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         assert False, f"유저 정보 조회 실패: {e}"
 
     response = client.post("/posts/", json={
@@ -39,7 +39,7 @@ def test_create_post():
 def test_add_comment():
     try:
         user_info = get_user_info(1)
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         assert False, f"유저 정보 조회 실패: {e}"
 
     response = client.post("/posts/1/comments", json={
@@ -53,7 +53,7 @@ def test_add_comment():
 def test_delete_post():
     try:
         user_info = get_user_info(1)
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         assert False, f"유저 정보 조회 실패: {e}"
 
     # 게시물 생성
@@ -80,7 +80,7 @@ def test_delete_post():
 def test_delete_comment():
     try:
         user_info = get_user_info(1)
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         assert False, f"유저 정보 조회 실패: {e}"
 
     # 게시물 생성
