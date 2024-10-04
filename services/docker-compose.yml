@@ -32,9 +32,9 @@ services:
     image: postgres:13
     container_name: content-db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: contentdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: content_db
     ports:
       - "5433:5432"
     networks:
@@ -44,9 +44,9 @@ services:
     image: postgres:13
     container_name: user-db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: userdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: to_day_culture_db
     ports:
       - "5434:5432"
     networks:
