@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, Text, Index, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db import Base
-from datetime import datetime
+
 
 # 콘텐츠 정보를 저장할 데이터베이스 모델 정의
 class Content(Base):
@@ -18,22 +18,24 @@ class Content(Base):
 Index('idx_title_category', Content.title, Content.category)
 
 class Post(Base):
-    __tablename__ = 'posts'
+    __tablename__ = "posts"
     
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    content = Column(Text, nullable=False)
-    author_id = Column(Integer, nullable=False)  # ForeignKey 제거
-
-    comments = relationship("Comment", back_populates="post")
+    title = Column(String, index=True)
+    content = Column(String)
+    author_id = Column(Integer)
+    
+    # 댓글 관계 설정
+    comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
 
 
 class Comment(Base):
-    __tablename__ = 'comments'
+    __tablename__ = "comments"
     
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(Text, nullable=False)
-    author_id = Column(Integer, nullable=False)  # ForeignKey 제거
-    post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
-
+    content = Column(String)
+    author_id = Column(Integer)
+    post_id = Column(Integer, ForeignKey("posts.id"))
+    
+    # 게시물과의 관계 설정
     post = relationship("Post", back_populates="comments")
