@@ -13,9 +13,14 @@ pycache/
 *.pid
 *.bak
 *.swp
-.dockerignore
 
 # 기타
 .idea/
 .vscode/
 *.sqlite3
+
+# Alembic 캐시 파일
+alembic/versions/__pycache__/
+
+# Alembic 환경 설정에 관련된 로그 파일
+alembic.log

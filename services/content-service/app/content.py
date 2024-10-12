@@ -1,4 +1,3 @@
-# content.py
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.schemas import ContentCreate, Content as ContentSchema
@@ -42,4 +41,3 @@ def delete_content(content_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Content not found")
     db.delete(content)
     db.commit()
-
