@@ -1,8 +1,6 @@
-# models.py
 from sqlalchemy import Column, Integer, String, Text, Index, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db import Base
-
 
 # 콘텐츠 정보를 저장할 데이터베이스 모델 정의
 class Content(Base):
@@ -13,6 +11,16 @@ class Content(Base):
     description = Column(Text, nullable=True)
     category = Column(String, nullable=True, index=True)  # 인덱스 추가
     creator = Column(String, nullable=True, index=True)  # 인덱스 추가
+
+    # 콘텐츠를 딕셔너리로 변환하는 메서드 추가
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "category": self.category,
+            "creator": self.creator
+        }
 
 # 복합 인덱스 추가
 Index('idx_title_category', Content.title, Content.category)
@@ -27,7 +35,6 @@ class Post(Base):
     
     # 댓글 관계 설정
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
-
 
 class Comment(Base):
     __tablename__ = "comments"

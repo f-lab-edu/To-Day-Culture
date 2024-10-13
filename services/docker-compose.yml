@@ -9,8 +9,9 @@ services:
       - "8000:8000"
     depends_on:
       - content-db
+      - redis  # Redis 의존성 추가
     env_file:
-      - ./content-service/.env  # 환경 변수 파일 지정
+      - ./content-service/.env  # Content 서비스 환경 변수 파일
     networks:
       - app-network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
@@ -24,7 +25,7 @@ services:
     depends_on:
       - user-db
     env_file:
-      - ./user-service/.env  # 환경 변수 파일 지정
+      - ./user-service/.env  # User 서비스 환경 변수 파일
     networks:
       - app-network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8001
@@ -33,9 +34,9 @@ services:
     image: postgres:13
     container_name: content-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: ${POSTGRES_USER}  # 공통 환경 변수에서 사용
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB}  # content-service 전용 환경 변수
     ports:
       - "5433:5432"
     networks:
@@ -47,7 +48,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${TEST_POSTGRES_DB}
+      POSTGRES_DB: ${TEST_POSTGRES_DB}  # content-service 테스트 DB 환경 변수
     ports:
       - "5435:5432"
     networks:
@@ -57,9 +58,9 @@ services:
     image: postgres:13
     container_name: user-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: ${POSTGRES_USER}  # 공통 환경 변수에서 사용
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${USER_POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB}  # user-service 전용 환경 변수
     ports:
       - "5434:5432"
     networks:
@@ -71,9 +72,17 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${USER_TEST_POSTGRES_DB}
+      POSTGRES_DB: ${USER_TEST_POSTGRES_DB}  # user-service 테스트 DB 환경 변수
     ports:
       - "5436:5432"
+    networks:
+      - app-network
+
+  redis:
+    image: redis:6
+    container_name: redis
+    ports:
+      - "6379:6379"
     networks:
       - app-network
 

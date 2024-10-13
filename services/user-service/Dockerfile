@@ -14,8 +14,11 @@ RUN chown -R appuser /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only the necessary application code
+# Copy the application code
 COPY app/ ./app
+
+# Copy the tests directory for running tests
+COPY tests/ ./tests
 
 # Expose the port for user-service (8001)
 EXPOSE 8001
