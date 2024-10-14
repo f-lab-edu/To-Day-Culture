@@ -98,7 +98,11 @@ To-day-Art/
 <br>
 
 
-## 🥊 개발 이슈 및 해결방안
+## 🥊 주요 개발 이슈 및 해결방안
 
-### Test Case
+**[[Fastapi 서비스 구조 선정]](https://www.notion.so/fastapi-06cbe46705d44e25a3115550e143a5f8)**
 **[[Fastapi 이메일 회원가입 유효성 검증 테스트 케이스 오류]](https://www.notion.so/82368a9e110943929208267f6f346ee8)**
+**[[콘텐츠 조회 모델 인덱스 쿼리 최적화]](https://www.notion.so/82368a9e110943929208267f6f346ee8)**
+**[[콘텐츠 조회 쿼리 최적화]](https://www.notion.so/1123c1810b61804086aae14e81367892)**
+**[[k6 데이터 조회 부하 테스트]](https://www.notion.so/K6-1-11f3c1810b6180b79805c44f279f723c)**
+
