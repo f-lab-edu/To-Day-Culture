@@ -119,3 +119,14 @@ To-day-Art/
 <br>
 <br>
 
+## API DOCS
+<br>
+
+### user-service
+<img width="1401" alt="스크린샷 2024-10-14 오후 10 24 56" src="https://github.com/user-attachments/assets/0acb9212-1844-4bfc-abad-2d0bbd14db73">
+
+<br>
+
+### content-service
+<br>
+<img width="1401" alt="스크린샷 2024-10-14 오후 10 25 12" src="https://github.com/user-attachments/assets/ed02dd2e-ae83-4c18-968d-b8b6350a8389">
