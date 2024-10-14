@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-export let options = {
+export const options = {
   vus: 1000, // 가상 사용자 수
   duration: '30s', // 테스트 지속 시간
 };
