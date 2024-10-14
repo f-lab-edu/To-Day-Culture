@@ -115,4 +115,7 @@ To-day-Art/
 **[[k6 데이터 조회 부하 테스트]](https://www.notion.so/K6-1-11f3c1810b6180b79805c44f279f723c)**
 <br>
 <br>
+**[[서비스 기획 및 설계]](https://www.notion.so/9dafee1738d24a169a406450b06e70de)**
+<br>
+<br>
 
