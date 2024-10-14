@@ -9,9 +9,9 @@ services:
       - "8000:8000"
     depends_on:
       - content-db
-      - redis  # Redis 의존성 추가
+      - redis
     env_file:
-      - ./content-service/.env  # Content 서비스 환경 변수 파일
+      - ./content-service/.env
     networks:
       - app-network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
@@ -25,18 +25,28 @@ services:
     depends_on:
       - user-db
     env_file:
-      - ./user-service/.env  # User 서비스 환경 변수 파일
+      - ./user-service/.env
     networks:
       - app-network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8001
+
+  k6:
+    image: loadimpact/k6
+    container_name: k6
+    platform: linux/amd64
+    volumes:
+      - ./loadtest.js:/scripts/loadtest.js  # 테스트 스크립트 경로를 맞춰주세요
+    command: run /scripts/loadtest.js  # k6가 실행할 스크립트 경로
+    networks:
+      - app-network
 
   content-db:
     image: postgres:13
     container_name: content-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}  # 공통 환경 변수에서 사용
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}  # content-service 전용 환경 변수
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     networks:
@@ -48,7 +58,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${TEST_POSTGRES_DB}  # content-service 테스트 DB 환경 변수
+      POSTGRES_DB: ${TEST_POSTGRES_DB}
     ports:
       - "5435:5432"
     networks:
@@ -58,9 +68,9 @@ services:
     image: postgres:13
     container_name: user-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}  # 공통 환경 변수에서 사용
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}  # user-service 전용 환경 변수
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5434:5432"
     networks:
@@ -72,7 +82,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${USER_TEST_POSTGRES_DB}  # user-service 테스트 DB 환경 변수
+      POSTGRES_DB: ${USER_TEST_POSTGRES_DB}
     ports:
       - "5436:5432"
     networks:
