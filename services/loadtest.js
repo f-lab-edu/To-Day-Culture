@@ -7,7 +7,7 @@ export let options = {
 };
 
 export default function () {
-  let res = http.get('http://content-service:8000/contents/'); // 엔드포인트 주소
+  let res = http.get('https://content-service:8000/contents/'); // 엔드포인트 주소
   check(res, {
     'status is 200': (r) => r.status === 200, // 상태 코드가 200인지 확인
   });
